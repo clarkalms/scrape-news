@@ -7,7 +7,7 @@ var cheerio = require("cheerio");
 
 var db = require("./models");
 
-var PORT = process.env.PORT || 8000;
+var PORT = process.env.PORT || 3000;
 
 var app = express();
 
@@ -25,16 +25,16 @@ mongoose.connect("mongodb://localhost/populatedb", { useNewUrlParser: true });
 
 
 app.get("/scrape", function (req, res) {
-    axios.get("https://www.nytimes.com/").then(function (response) {
+    axios.get("https://www.time.com/").then(function (response) {
         var $ = cheerio.load(response.data);
 
-        $(".a").each(function (i, element) {
+        $(".headline").each(function (i, element) {
 
             var result = {};
 
             result.title = $(this)
-            .children("h2")
-            .text();
+            .children("a")
+            .val();
             result.link = $(this)
             .children("a")
             .attr("href");
@@ -56,7 +56,7 @@ app.get("/scrape", function (req, res) {
 
 
 app.get("/articles", function (req, res) {
-    db.Article.find({})
+    db.Article.find({ })
         .then(function (result) {
             res.json(result);
         })
